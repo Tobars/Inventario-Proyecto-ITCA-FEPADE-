@@ -1,0 +1,554 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package vistas;
+
+import DAOs.DAO_Categorias;
+import DAOs.DAO_Detalles_procesos;
+import DAOs.DAO_Productos;
+import DAOs.DAO_Proveedores;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import modelo.Detalles_procesos;
+import modelo.Productos;
+
+/**
+ *
+ * @author user
+ */
+public class vProcesosProds extends javax.swing.JFrame {
+
+    String encabezados[] = {"Prod ID", "Nombre", "Precio", "In Stock", "Foto", "Categoría", "Proveedor"};
+    
+    
+    DAO_Productos daoProds = new DAO_Productos();
+    DAO_Categorias daoCateg = new DAO_Categorias();
+    DAO_Detalles_procesos daoProceso = new DAO_Detalles_procesos();
+    DAO_Proveedores daoProveedor = new DAO_Proveedores();
+    ArrayList<Object[]> datos = new ArrayList<>();
+    DefaultTableModel mModeloTabla = new DefaultTableModel();
+    /**
+     * Creates new form vProcesosProds
+     */
+    public vProcesosProds() {
+        initComponents();
+        
+        for(String nombre : encabezados) {
+            mModeloTabla.addColumn(nombre);
+        }
+        
+        CargarImagenes();
+        cargarComboBox();
+    }
+    
+    private void cargarTabla() {
+        DefaultTableModel modelo = new DefaultTableModel(encabezados, 0);
+        modelo.setNumRows(0); // Limpiando el modelo
+        this.datos = this.daoProds.seleccionarFiltrado();
+        
+        for(Object[] fila : this.datos) {
+            modelo.addRow(fila);
+        }
+        
+        this.tblDatos.setModel(modelo);
+    }
+    
+    private void Limpiar() {
+        mModeloTabla.setNumRows(0);
+    }
+    
+    private void CargarImagenes() {
+        ArrayList<String> nombresCateg = daoCateg.getNombres();
+        ArrayList<String> nombresProvs = daoProveedor.getNombres();
+        
+        tblDatos.setDefaultRenderer(Object.class, new RenderImagen());
+
+        ArrayList Imagenes;
+        //ImagenAlmacen mImagenAlmacen;
+        Productos producto;
+
+        Object Datos[] = new Object[7];
+        Imagenes = daoProds.FiltrarImagenes("", 0, 0, 0);
+
+        if (Imagenes != null) {
+            for (int i = 0; i < Imagenes.size(); i++) {
+                producto = (Productos) Imagenes.get(i);
+                Datos[0] = String.valueOf(producto.getProducto_id());
+                Datos[1] = producto.getNombre_producto();
+                Datos[2] = producto.getPrecio();
+                Datos[3] = producto.getInStock();
+                try {
+                    byte[] imagen = producto.getFoto();
+                    BufferedImage bufferedImage = null;
+                    InputStream inputStream = new ByteArrayInputStream(imagen);
+                    bufferedImage = ImageIO.read(inputStream);
+                    ImageIcon mIcono = new ImageIcon(bufferedImage.getScaledInstance(60, 60, 0));
+                    Datos[4] = new JLabel(mIcono);
+                } catch (Exception e) {
+                    Datos[4] = new JLabel("No imagen");
+                }
+
+
+                Datos[5] = nombresCateg.get(producto.getCategoria_id() - 1);
+                Datos[6] = nombresProvs.get(producto.getProveedor_id() - 1);
+
+                mModeloTabla.addRow(Datos);
+            }
+
+            tblDatos.setModel(mModeloTabla);
+            tblDatos.setRowHeight(60);
+            tblDatos.getColumnModel().getColumn(0).setPreferredWidth(60);
+            tblDatos.getColumnModel().getColumn(1).setPreferredWidth(60);
+            tblDatos.getColumnModel().getColumn(2).setPreferredWidth(60);
+
+        }
+    }
+    
+    private void cargarComboBox() {
+        ArrayList<String> nombresCateg = new ArrayList<>();
+        nombresCateg.add("Todos");
+        for(String nom : this.daoCateg.getNombres()) {
+            nombresCateg.add(nom);
+        }
+        
+        ArrayList<String> nombresProcesos = this.daoProceso.getNombres();
+        
+        ArrayList<String> nombresProveedores = new ArrayList<>();
+        nombresProveedores.add("Todos");
+        
+        for(String nom : this.daoProveedor.getNombres()) {
+            nombresProveedores.add(nom);
+        }
+        
+        for(String nombreCateg : nombresCateg) {
+            cmbCategoríaBuscar.addItem(nombreCateg);
+        }
+        
+        for(String nombreProceso : nombresProcesos) {
+            cmbProceso.addItem(nombreProceso);
+        }
+        
+        for(String nombreProv : nombresProveedores) {
+            cmbProvBuscar.addItem(nombreProv);
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jLabel1 = new javax.swing.JLabel();
+        txtIdProd = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        btnVolver = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblDatos = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        txtNombreProd = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtStock = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        txtCantidad = new javax.swing.JSpinner();
+        jLabel6 = new javax.swing.JLabel();
+        cmbProceso = new javax.swing.JComboBox<>();
+        btnIngresar = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        txtIDBuscar = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        txtNombreBuscar = new javax.swing.JTextField();
+        jLabel10 = new javax.swing.JLabel();
+        cmbCategoríaBuscar = new javax.swing.JComboBox<>();
+        btnBuscar = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        cmbProvBuscar = new javax.swing.JComboBox<>();
+        btnReset = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setText("Entrada/ Salida de Productos");
+
+        txtIdProd.setEditable(false);
+
+        jLabel2.setText("ID Producto:");
+
+        btnVolver.setText("Volver al menú");
+        btnVolver.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnVolverMouseClicked(evt);
+            }
+        });
+
+        tblDatos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tblDatos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblDatosMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblDatos);
+
+        jLabel3.setText("Nombre Prod:");
+
+        txtNombreProd.setEditable(false);
+
+        jLabel4.setText("En Stock:");
+
+        txtStock.setEditable(false);
+
+        jLabel5.setText("Cantidad:");
+
+        txtCantidad.setModel(new javax.swing.SpinnerNumberModel(0, 0, null, 1));
+
+        jLabel6.setText("Elija una opción:");
+
+        btnIngresar.setText("Ingresar");
+        btnIngresar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnIngresarMouseClicked(evt);
+            }
+        });
+
+        jLabel7.setText("Buscar Productos");
+
+        jLabel8.setText("ID Producto:");
+
+        jLabel9.setText("Nombre Prod:");
+
+        jLabel10.setText("Categoría:");
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnBuscarMouseClicked(evt);
+            }
+        });
+
+        jLabel11.setText("Proveedor:");
+
+        btnReset.setText("Todos los productos");
+        btnReset.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnResetMouseClicked(evt);
+            }
+        });
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(28, 28, 28)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(txtIdProd, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8)
+                            .addComponent(txtIDBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel3)
+                            .addComponent(txtNombreProd, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+                            .addComponent(jLabel9)
+                            .addComponent(txtNombreBuscar))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel7)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4)
+                                    .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(28, 28, 28)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5)
+                                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(cmbProceso, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(27, 27, 27)
+                                .addComponent(btnIngresar, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(jLabel10))
+                                    .addComponent(cmbCategoríaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel11)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(cmbProvBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(44, 44, 44)
+                                        .addComponent(btnBuscar)
+                                        .addGap(36, 36, 36)
+                                        .addComponent(btnReset)))))
+                        .addGap(0, 106, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(247, 247, 247)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnVolver)))
+                .addContainerGap())
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(btnVolver))
+                .addGap(7, 7, 7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel6))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtIdProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombreProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbProceso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnIngresar))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel7)
+                .addGap(14, 14, 14)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10)
+                    .addComponent(jLabel11))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtIDBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtNombreBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cmbCategoríaBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBuscar)
+                    .addComponent(cmbProvBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnReset))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnVolverMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnVolverMouseClicked
+        // TODO add your handling code here:
+        vMenu vMenu = new vMenu();
+        vMenu.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_btnVolverMouseClicked
+
+    private void tblDatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDatosMouseClicked
+        // TODO add your handling code here:
+        this.txtIdProd.setText(this.tblDatos.getValueAt(this.tblDatos.getSelectedRow(), 0).toString());
+        this.txtNombreProd.setText(this.tblDatos.getValueAt(this.tblDatos.getSelectedRow(), 1).toString());
+        this.txtStock.setText(this.tblDatos.getValueAt(this.tblDatos.getSelectedRow(), 3).toString());
+    }//GEN-LAST:event_tblDatosMouseClicked
+
+    private void btnBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBuscarMouseClicked
+        // TODO add your handling code here:
+        int idProd = 0; // producto_id
+        String nombreProd = "";// nombre_producto
+        int idCateg = this.cmbCategoríaBuscar.getSelectedIndex(); // categoria_id
+        int idProv = this.cmbProvBuscar.getSelectedIndex(); // proveedor_id
+        
+        // Seteando los valores
+        if(this.txtIDBuscar.getText().length() > 0) idProd = Integer.parseInt(this.txtIDBuscar.getText());
+        if(this.txtNombreBuscar.getText().length() > 0) nombreProd = this.txtNombreBuscar.getText();
+        
+        
+        // cargando los datos filtrados
+        mModeloTabla.setNumRows(0);
+        tblDatos.setDefaultRenderer(Object.class, new RenderImagen());
+
+        ArrayList Imagenes;
+        
+        Productos producto;
+
+        Object Datos[] = new Object[7];
+        Imagenes = daoProds.FiltrarImagenes(nombreProd, idProd, idCateg, idProv);
+
+        if (Imagenes != null) {
+            for (int i = 0; i < Imagenes.size(); i++) {
+                producto = (Productos) Imagenes.get(i);
+                Datos[0] = String.valueOf(producto.getProducto_id());
+                Datos[1] = producto.getNombre_producto();
+                Datos[2] = producto.getPrecio();
+                Datos[3] = producto.getInStock();
+                try {
+                    byte[] imagen = producto.getFoto();
+                    BufferedImage bufferedImage = null;
+                    InputStream inputStream = new ByteArrayInputStream(imagen);
+                    bufferedImage = ImageIO.read(inputStream);
+                    ImageIcon mIcono = new ImageIcon(bufferedImage.getScaledInstance(60, 60, 0));
+                    Datos[4] = new JLabel(mIcono);
+                } catch (Exception e) {
+                    Datos[4] = new JLabel("No hay imagen");
+                }
+
+
+                Datos[5] = producto.getCategoria_id();
+                Datos[6] = producto.getProveedor_id();
+
+                mModeloTabla.addRow(Datos);
+            }
+
+            tblDatos.setModel(mModeloTabla);
+            tblDatos.setRowHeight(60);
+            tblDatos.getColumnModel().getColumn(0).setPreferredWidth(60);
+            tblDatos.getColumnModel().getColumn(1).setPreferredWidth(60);
+            tblDatos.getColumnModel().getColumn(2).setPreferredWidth(60);
+        }
+    }//GEN-LAST:event_btnBuscarMouseClicked
+
+    private void btnResetMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnResetMouseClicked
+        // TODO add your handling code here:
+        Limpiar();
+        CargarImagenes();
+    }//GEN-LAST:event_btnResetMouseClicked
+
+    private void btnIngresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnIngresarMouseClicked
+        // TODO add your handling code here:
+        Detalles_procesos proceso = new Detalles_procesos();
+        
+        // Obteniendo la cantidad en Stock de el producto seleccionado
+        double cantInStock = this.daoProds.getInStock(Integer.parseInt(this.txtIdProd.getText()));
+        double cantIngresar = Double.parseDouble(this.txtCantidad.getValue().toString());
+        int prodID = Integer.parseInt(this.txtIdProd.getText());
+        double total = 0;
+        
+        // Cargando la instancia con los datos del formulario
+        proceso.setProducto_id(Integer.parseInt(this.txtIdProd.getText()));
+        proceso.setProceso_id(this.cmbProceso.getSelectedIndex() + 1);
+        proceso.setCantidad((int) cantIngresar);
+        
+        // Validando que la cantidad ingresada no sea menor que la cantidad en stock de el producto
+        if((cantInStock < cantIngresar) && (this.cmbProceso.getSelectedIndex() + 1) == 2) {
+            JOptionPane.showMessageDialog(this, "La cantidad a ingresar no debe ser menor a la cantidad en Stock de el producto", "Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // Ingresando el proceso en su tabla
+            if(JOptionPane.showConfirmDialog(this, "Desea modificar realizar el proceso?", "Confirmación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION) {
+                if(daoProceso.insertar(proceso)) {
+                    // Si el index del cmbProceso es igual a 1 es porque es una entrada de productos
+                    // de lo contrario es una salida del producto
+                    if(this.cmbProceso.getSelectedIndex() + 1 == 1) {
+                        total = cantInStock + cantIngresar;
+                    } else {
+                        total = cantInStock - cantIngresar;
+                    }
+                    // Realizando el cambio en el campo inStock
+                    daoProds.updateInStock(prodID, total);
+                    JOptionPane.showMessageDialog(this, "Proceso realizado con éxito", "Mensaje de confirmación", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se pudo realizar el proceso", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Proceso cancelado", "Información", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
+            // Limpiando los campos
+            this.txtIdProd.setText("");
+            this.txtNombreProd.setText("");
+            this.txtStock.setText("");
+            this.txtCantidad.setValue(0);
+            this.cmbProceso.setSelectedIndex(1);
+            // Cargando la tabla actualizada
+            Limpiar();
+            CargarImagenes();
+        }
+    }//GEN-LAST:event_btnIngresarMouseClicked
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(vProcesosProds.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(vProcesosProds.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(vProcesosProds.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(vProcesosProds.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new vProcesosProds().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnIngresar;
+    private javax.swing.JButton btnReset;
+    private javax.swing.JButton btnVolver;
+    private javax.swing.JComboBox<String> cmbCategoríaBuscar;
+    private javax.swing.JComboBox<String> cmbProceso;
+    private javax.swing.JComboBox<String> cmbProvBuscar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tblDatos;
+    private javax.swing.JSpinner txtCantidad;
+    private javax.swing.JTextField txtIDBuscar;
+    private javax.swing.JTextField txtIdProd;
+    private javax.swing.JTextField txtNombreBuscar;
+    private javax.swing.JTextField txtNombreProd;
+    private javax.swing.JTextField txtStock;
+    // End of variables declaration//GEN-END:variables
+}
